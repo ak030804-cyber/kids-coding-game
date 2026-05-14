@@ -3,247 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>🧱 積木編程 - 小小程式員</title>
+<title>👶 生活小管家 - 日常編程</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     font-family:'Segoe UI','PingFang HK','Noto Sans HK',sans-serif;
-    background:linear-gradient(145deg,#1a1a2e 0%,#16213e 100%);
+    background:linear-gradient(145deg,#667eea 0%,#764ba2 100%);
     min-height:100vh;display:flex;justify-content:center;align-items:center;padding:10px;
   }
   .app{
-    max-width:580px;width:100%;
-    background:rgba(255,255,255,0.06);backdrop-filter:blur(20px);
-    border-radius:28px;padding:16px 14px 18px;
-    border:1px solid rgba(255,255,255,0.1);box-shadow:0 25px 60px rgba(0,0,0,0.5);
+    max-width:500px;width:100%;
+    background:#fff;border-radius:32px;
+    padding:20px 18px 22px;
+    box-shadow:0 25px 60px rgba(0,0,0,0.3);
+    overflow:hidden;
   }
 
   /* Header */
-  .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding:0 2px}
-  .title{color:#fff;font-size:18px;font-weight:800;display:flex;align-items:center;gap:6px}
-  .title span{color:#fbbf24}
-  .level-badge{
-    background:rgba(251,191,36,0.15);color:#fbbf24;
-    padding:4px 12px;border-radius:14px;font-size:12px;font-weight:700;
-    border:1px solid rgba(251,191,36,0.2);
-  }
-
-  /* Challenge description */
-  .challenge{
-    background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.15);
-    border-radius:16px;padding:10px 14px;margin-bottom:10px;
-    display:flex;align-items:center;gap:10px;
-  }
-  .challenge-icon{font-size:28px}
-  .challenge-text{color:rgba(255,255,255,0.9);font-size:14px;line-height:1.4}
-  .challenge-text strong{color:#fbbf24}
-  .challenge-hint{color:rgba(255,255,255,0.4);font-size:12px;margin-top:2px}
-
-  /* Stage */
-  .stage-wrap{
-    background:linear-gradient(180deg,#87CEEB 0%,#E0F0FF 55%,#90EE90 55%,#228B22 100%);
-    border-radius:20px;overflow:hidden;margin-bottom:10px;
-    aspect-ratio:16/9;position:relative;box-shadow:inset 0 0 30px rgba(0,0,0,0.2);
-  }
-  .stage{width:100%;height:100%;position:relative;overflow:hidden}
-  .stage-char{
-    position:absolute;font-size:64px;
-    transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);
-    filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));user-select:none;
-    bottom:30%;left:15%;transform-origin:center;cursor:default;
-  }
-  .stage-char.speech::after{
-    content:attr(data-text);
-    position:absolute;top:-44px;left:50%;transform:translateX(-50%);
-    background:#fff;color:#333;padding:6px 14px;border-radius:18px;
-    font-size:17px;font-weight:700;white-space:nowrap;
-    box-shadow:0 3px 12px rgba(0,0,0,0.15);
-    animation:popIn 0.25s ease;
-  }
-  @keyframes popIn{0%{transform:translateX(-50%) scale(0)}100%{transform:translateX(-50%) scale(1)}}
-  .stage-char.anim-spin{animation:spR 0.5s ease}
-  @keyframes spR{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-  .stage-char.anim-dance{animation:dancR 0.3s infinite alternate}
-  @keyframes dancR{0%{transform:translateY(0) rotate(-5deg)}100%{transform:translateY(-15px) rotate(5deg)}}
-  .stage-char.anim-jump{animation:jmpR 0.4s ease}
-  @keyframes jmpR{0%{transform:translateY(0)}50%{transform:translateY(-40px)}100%{transform:translateY(0)}}
-  .stage-char.anim-wave{animation:wavR 0.5s ease}
-  @keyframes wavR{0%,100%{transform:rotate(0)}25%{transform:rotate(-15deg)}75%{transform:rotate(15deg)}}
-  .goal-area{
-    position:absolute;bottom:30%;right:15%;
-    font-size:48px;filter:drop-shadow(0 3px 8px rgba(251,191,36,0.5));
-    animation:goalP 1.5s infinite;
-  }
-  @keyframes goalP{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-  .deco{position:absolute;pointer-events:none;font-size:20px}
-  .d1{top:6%;left:8%;font-size:28px;animation:flC 7s infinite ease-in-out}
-  .d2{top:4%;left:55%;font-size:20px;animation:flC 9s infinite ease-in-out reverse}
-  .d3{top:2%;right:6%;font-size:30px;animation:plS 3s infinite}
-  @keyframes flC{0%,100%{transform:translateX(0)}50%{transform:translateX(15px)}}
-  @keyframes plS{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
-
-  /* Block palette */
-  .palette-wrap{
-    display:flex;gap:5px;overflow-x:auto;padding:4px 0 6px;margin-bottom:8px;
-    -webkit-overflow-scrolling:touch;scrollbar-width:thin;
-  }
-  .block{
-    display:flex;align-items:center;gap:5px;
-    padding:8px 14px;border-radius:12px;font-size:13px;font-weight:700;
-    color:#fff;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;
-    transition:all 0.15s;user-select:none;
-    box-shadow:0 3px 0 rgba(0,0,0,0.2);
-    -webkit-tap-highlight-color:transparent;touch-action:manipulation;
-  }
-  .block:active{transform:translateY(3px);box-shadow:none}
-  .b-move{background:#4CAF50}
-  .b-turn{background:#2196F3}
-  .b-say{background:#FF9800}
-  .b-jump{background:#E91E63}
-  .b-wave{background:#9C27B0}
-  .b-dance{background:#f44336}
-  .b-repeat{background:#00BCD4}
-  .b-restart{background:#795548}
-
-  /* Script editor - vertical stack like Scratch */
-  .editor{
-    background:rgba(0,0,0,0.3);border-radius:18px;padding:10px;margin-bottom:8px;
-    min-height:90px;max-height:170px;overflow-y:auto;
-  }
-  .editor-header{
-    display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;
-  }
-  .editor-label{color:rgba(255,255,255,0.35);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
-  .block-count{color:rgba(255,255,255,0.25);font-size:11px}
-
-  /* The block stack - vertical, connected */
-  .stack{display:flex;flex-direction:column;gap:0;min-height:40px;padding-left:16px;position:relative}
-  .stack-empty{color:rgba(255,255,255,0.18);font-size:12px;text-align:center;padding:12px 0;width:100%}
-
-  .stack-block{
+  .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .title{
+    font-size:20px;font-weight:800;color:#333;
     display:flex;align-items:center;gap:6px;
-    padding:7px 14px 7px 22px;border-radius:0 8px 8px 0;
-    font-size:13px;font-weight:600;color:#fff;
+  }
+  .title .icon{font-size:24px}
+  .lv-badge{
+    background:#667eea;color:#fff;
+    padding:4px 14px;border-radius:16px;font-size:13px;font-weight:700;
+  }
+
+  /* Scene */
+  .scene-card{
+    background:#f8f9ff;border-radius:24px;padding:16px;
+    margin-bottom:12px;border:2px solid #e8ecf4;
+  }
+  .scene-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  .scene-icon{font-size:40px;background:#fff;border-radius:18px;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+  .scene-info{flex:1}
+  .scene-title{font-size:17px;font-weight:800;color:#333}
+  .scene-desc{font-size:13px;color:#888;margin-top:2px}
+  .scene-desc strong{color:#667eea}
+
+  /* Character area */
+  .char-area{
+    background:linear-gradient(135deg,#f0f4ff,#e8f0fe);
+    border-radius:20px;padding:16px;text-align:center;
+    margin-bottom:12px;min-height:100px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;
+  }
+  .char-big{font-size:80px;transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+  .char-big.done{animation:popChar 0.5s ease}
+  @keyframes popChar{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+  .char-result-text{
+    font-size:16px;font-weight:700;color:#667eea;margin-top:4px;
+  }
+
+  /* Steps to order */
+  .steps-area{margin-bottom:10px}
+  .steps-label{
+    font-size:12px;font-weight:700;color:#999;text-transform:uppercase;
+    letter-spacing:1px;margin-bottom:6px;
+  }
+  .steps-tray{
+    display:flex;gap:8px;flex-wrap:wrap;
+    min-height:56px;padding:8px;
+    background:#f0f4ff;border-radius:16px;
+    border:2px dashed #d0d8e8;
+  }
+  .step-chip{
+    display:flex;align-items:center;gap:6px;
+    padding:8px 14px;border-radius:14px;font-size:14px;font-weight:700;
+    cursor:pointer;transition:all 0.2s;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    user-select:none;touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .step-chip:active{transform:scale(0.92)}
+  .step-chip .emoji{font-size:20px}
+  .step-tag{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 14px;border-radius:14px;font-size:14px;font-weight:700;
+    color:#fff;
+  }
+  .step-tag .rm{
+    margin-left:4px;background:rgba(255,255,255,0.2);
+    border:none;border-radius:50%;width:18px;height:18px;
+    font-size:10px;color:#fff;cursor:pointer;
+  }
+
+  /* Sequence row */
+  .seq-row{
+    display:flex;gap:4px;flex-wrap:wrap;align-items:center;
+    min-height:46px;padding:6px;
+    background:#fff;border-radius:14px;
+    border:2px solid #e0e6f0;
+  }
+  .seq-slot{
+    display:flex;align-items:center;gap:4px;
+    padding:6px 12px;border-radius:12px;
+    background:#667eea;color:#fff;font-size:13px;font-weight:700;
     position:relative;cursor:pointer;
-    min-height:32px;border-left:3px solid rgba(255,255,255,0.3);
-    animation:blkIn 0.2s ease;
-    touch-action:manipulation;
   }
-  .stack-block:first-child{border-radius:8px 8px 8px 0}
-  .stack-block:last-child{border-radius:0 8px 8px 8px}
-  .stack-block:only-child{border-radius:8px}
-  .stack-block::before{
-    content:'';position:absolute;left:-14px;top:50%;
-    width:11px;height:2px;background:rgba(255,255,255,0.2);
+  .seq-slot .x{
+    margin-left:4px;width:16px;height:16px;
+    background:rgba(255,255,255,0.25);border:none;border-radius:50%;
+    font-size:9px;color:#fff;cursor:pointer;
   }
+  .seq-slot.active-slot{animation:slotPulse 0.4s ease;box-shadow:0 0 12px rgba(102,126,234,0.5)}
+  @keyframes slotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+  .seq-empty{color:#bbb;font-size:13px;padding:4px 0}
+  .seq-arrow{color:#ccc;font-size:12px}
 
-  /* Notch connector between blocks */
-  .stack-block::after{
-    content:'';position:absolute;bottom:-4px;left:10px;
-    width:10px;height:4px;
-    clip-path:polygon(0% 0%,100% 0%,50% 100%);
+  /* Action hint */
+  .action-hint{
+    text-align:center;font-size:14px;font-weight:600;
+    color:#999;margin-bottom:8px;min-height:20px;
   }
-
-  .stack-block .rm{
-    position:absolute;top:-5px;right:-5px;
-    width:16px;height:16px;background:rgba(0,0,0,0.5);
-    border-radius:50%;font-size:8px;border:none;color:#fff;
-    cursor:pointer;opacity:0;transition:opacity 0.2s;
-  }
-  .stack-block:hover .rm{opacity:1}
-
-  .stack-block.active-block{
-    animation:blinkB 0.4s ease;
-    box-shadow:0 0 16px rgba(255,255,255,0.4);
-  }
-  @keyframes blinkB{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-
-  /* Repeat wrapper */
-  .repeat-wrap{
-    position:relative;padding-left:4px;margin:2px 0;
-  }
-  .repeat-header{
-    display:flex;align-items:center;gap:6px;padding:6px 12px 4px 8px;
-    background:rgba(0,188,212,0.15);border-radius:10px 10px 0 0;
-    border:1px solid rgba(0,188,212,0.2);border-bottom:none;
-    font-size:12px;color:#00BCD4;font-weight:700;
-  }
-  .repeat-body{
-    border-left:3px solid #00BCD4;border-right:1px solid rgba(0,188,212,0.15);
-    border-bottom:1px solid rgba(0,188,212,0.15);
-    border-radius:0 0 10px 10px;padding:4px 4px 4px 16px;
-    display:flex;flex-direction:column;gap:0;
-    background:rgba(0,188,212,0.04);
-  }
-  .repeat-rm{
-    background:none;border:none;color:rgba(255,255,255,0.3);font-size:10px;
-    cursor:pointer;margin-left:auto;
-  }
+  .action-hint.ok{color:#4CAF50}
+  .action-hint.fail{color:#f44336}
 
   /* Controls */
-  .controls{display:flex;gap:6px}
+  .controls{display:flex;gap:8px}
   .ctrl{
-    flex:1;padding:12px 0;border-radius:14px;border:none;
-    font-size:16px;font-weight:800;cursor:pointer;transition:all 0.2s;
+    flex:1;padding:14px 0;border-radius:16px;border:none;
+    font-size:17px;font-weight:800;cursor:pointer;transition:all 0.2s;
     -webkit-tap-highlight-color:transparent;touch-action:manipulation;
   }
   .ctrl:active{transform:scale(0.95)}
-  .btn-play{
-    background:linear-gradient(135deg,#4CAF50,#388E3C);color:#fff;
-    box-shadow:0 4px 15px rgba(76,175,80,0.3);
+  .btn-check{
+    background:linear-gradient(135deg,#667eea,#5a67d8);color:#fff;
+    box-shadow:0 4px 15px rgba(102,126,234,0.3);
   }
-  .btn-play:disabled{opacity:0.4;cursor:not-allowed}
-  .btn-clear{
-    background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);
-    border:1px solid rgba(255,255,255,0.1);
+  .btn-check:disabled{opacity:0.4;cursor:not-allowed}
+  .btn-reset{
+    background:#f0f4ff;color:#667eea;border:1px solid #d0d8e8;
   }
   .btn-next{
     display:none;
-    background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1a1a2e;
-    box-shadow:0 4px 15px rgba(251,191,36,0.3);
+    background:linear-gradient(135deg,#48bb78,#38a169);color:#fff;
+    box-shadow:0 4px 15px rgba(72,187,120,0.3);
   }
   .btn-next.show{display:block}
 
-  .status{
-    text-align:center;margin-top:8px;font-size:13px;font-weight:600;
-    min-height:20px;color:rgba(255,255,255,0.5);
+  /* Success overlay */
+  .success-overlay{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(255,255,255,0.85);
+    border-radius:20px;z-index:10;
+    animation:fadeIn 0.4s ease;
   }
-  .status.ok{color:#4CAF50}
-  .status.fail{color:#f44336}
-  .status.info{color:#2196F3}
+  @keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
+  .success-overlay .big{font-size:60px}
+  .success-overlay .msg{font-size:18px;font-weight:800;color:#48bb78;margin-top:8px}
+  .success-overlay .sub{font-size:13px;color:#888;margin-top:4px}
 
-  /* Dialogs */
-  .dialog-overlay{
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,0.5);z-index:500;
-    display:flex;align-items:center;justify-content:center;
-  }
-  .dialog-card{
-    background:#fff;border-radius:20px;padding:24px 20px;
-    width:280px;max-width:85vw;box-shadow:0 20px 60px rgba(0,0,0,0.3);
-  }
-  .dialog-card h3{color:#333;font-size:17px;margin-bottom:10px}
-  .dialog-card input{
-    width:100%;padding:10px 14px;border-radius:12px;
-    border:2px solid #ddd;font-size:16px;outline:none;font-family:inherit;margin-bottom:10px;
-  }
-  .dialog-card input:focus{border-color:#FF9800}
-  .dialog-card .dbtns{display:flex;gap:8px}
-  .dialog-card .dbtns button{
-    flex:1;padding:9px;border-radius:12px;border:none;
-    font-size:14px;font-weight:700;cursor:pointer;
-  }
-  .dialog-card .dbtns .ok{background:#FF9800;color:#fff}
-  .dialog-card .dbtns .cancel{background:#eee;color:#666}
-
-  /* Repeat dialog */
-  .repeat-options{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-  .repeat-opt{
-    flex:1;min-width:50px;padding:10px;border-radius:12px;
-    border:2px solid #ddd;text-align:center;cursor:pointer;
-    font-size:16px;font-weight:700;color:#333;transition:all 0.15s;
-  }
-  .repeat-opt.selected{border-color:#00BCD4;background:#E0F7FA}
+  /* Stars */
+  .stars{margin-top:8px;font-size:28px;letter-spacing:4px}
 
   /* Confetti */
   .cf-c{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000;overflow:hidden}
@@ -251,7 +167,7 @@
     position:absolute;width:8px;height:8px;opacity:0;
     animation:cfF 2.5s ease-out forwards;
   }
-  @keyframes cfF{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+  @keyframes cfF{0%{transform:translateY(-10px);opacity:1}100%{transform:translateY(100vh);opacity:0}}
 </style>
 </head>
 <body>
@@ -259,523 +175,402 @@
 <div class="app">
   <!-- Header -->
   <div class="header">
-    <div class="title">🧱 <span>積木編程</span></div>
-    <div class="level-badge" id="lvBadge">第 1 關</div>
+    <div class="title"><span class="icon">👶</span>生活小管家</div>
+    <div class="lv-badge" id="lvBadge">第 1 關</div>
   </div>
 
-  <!-- Challenge -->
-  <div class="challenge" id="challengeBox">
-    <div class="challenge-icon" id="chIcon">🎯</div>
-    <div>
-      <div class="challenge-text" id="chText"><strong>挑戰：</strong>用積木令貓貓行到星星</div>
-      <div class="challenge-hint" id="chHint">💡 提示：用「行一步」積木</div>
+  <!-- Scene -->
+  <div class="scene-card">
+    <div class="scene-header">
+      <div class="scene-icon" id="sceneIcon">🌅</div>
+      <div class="scene-info">
+        <div class="scene-title" id="sceneTitle">早晨起床</div>
+        <div class="scene-desc" id="sceneDesc">幫 <strong>小明</strong> 排好早晨嘅步驟</div>
+      </div>
     </div>
-  </div>
 
-  <!-- Stage -->
-  <div class="stage-wrap">
-    <div class="stage" id="stage">
-      <div class="deco d1">☁️</div>
-      <div class="deco d2">☁️</div>
-      <div class="deco d3">🌞</div>
-      <div class="stage-char" id="char">🐱</div>
-      <div class="goal-area" id="goalArea">⭐</div>
+    <!-- Character display -->
+    <div class="char-area" id="charArea">
+      <div class="char-big" id="charBig">😴</div>
+      <div class="char-result-text" id="charResult"></div>
     </div>
-  </div>
 
-  <!-- Block palette -->
-  <div class="palette-wrap" id="palette">
-    <button class="block b-move" data-cmd="move">🦶 行一步</button>
-    <button class="block b-turn" data-cmd="turn">🔄 轉圈</button>
-    <button class="block b-jump" data-cmd="jump">⬆️ 跳起</button>
-    <button class="block b-wave" data-cmd="wave">👋 揮手</button>
-    <button class="block b-dance" data-cmd="dance">💃 跳舞</button>
-    <button class="block b-say" data-cmd="say">💬 講嘢</button>
-    <button class="block b-repeat" data-cmd="repeat">🔁 重複</button>
-    <button class="block b-restart" data-cmd="restart">↩️ 重置位置</button>
-  </div>
-
-  <!-- Editor -->
-  <div class="editor" id="editor">
-    <div class="editor-header">
-      <div class="editor-label">📝 我嘅程式</div>
-      <div class="block-count" id="blockCount">0 個積木</div>
+    <!-- Steps to order -->
+    <div class="steps-area">
+      <div class="steps-label">🧩 步驟（㩒佢哋排次序）</div>
+      <div class="steps-tray" id="stepsTray"></div>
     </div>
-    <div class="stack" id="stack">
-      <div class="stack-empty">㩒上面嘅積木開始砌程式 🧱</div>
-    </div>
-  </div>
 
-  <!-- Status -->
-  <div class="status" id="status">🐱 砌好積木，㩒「開始」睇結果！</div>
+    <!-- Current sequence -->
+    <div class="steps-label" style="margin-top:6px">📝 你排嘅順序</div>
+    <div class="seq-row" id="seqRow">
+      <div class="seq-empty">㩒上面嘅步驟，排好順序</div>
+    </div>
+
+    <!-- Action hint -->
+    <div class="action-hint" id="hint">👆 㩒步驟排好正確次序</div>
+  </div>
 
   <!-- Controls -->
   <div class="controls">
-    <button class="ctrl btn-play" id="playBtn">▶️ 開始</button>
-    <button class="ctrl btn-clear" id="clearBtn">🗑️ 清空</button>
+    <button class="ctrl btn-check" id="checkBtn">✅ 檢查</button>
+    <button class="ctrl btn-reset" id="resetBtn">🔄 重新</button>
     <button class="ctrl btn-next" id="nextBtn">➡️ 下一關</button>
   </div>
 </div>
 
 <script>
-// ======== CHALLENGES ========
-const CHALLENGES = [
+const LEVELS = [
   {
-    title: '第一步',
-    icon: '🎯',
-    desc: '用 <strong>「行一步」</strong> 積木，令貓貓行到 ⭐ 星星度！',
-    hint: '💡 要用幾個「行一步」先到？由左邊行到右邊喎～',
-    goalCheck: (char) => char.x >= 70,
-    afterRun: false,
-    requiredBlocks: ['move'],
+    title: '早晨起床',
+    icon: '🌅',
+    char: '😴',
+    charHappy: '😊',
+    desc: '幫小明排好早晨嘅步驟',
+    successMsg: '小明準備好返學啦！',
+    steps: [
+      {emoji:'🛏️', text:'起身摺被'},
+      {emoji:'🪥', text:'刷牙洗面'},
+      {emoji:'👕', text:'換校服'},
+      {emoji:'🍞', text:'食早餐'},
+      {emoji:'🎒', text:'執書包返學'},
+    ],
+    correct: [0,1,2,3,4],
+    anims: [
+      {text:'伸個懶腰，摺好張被～', emoji:'🛏️'},
+      {text:'刷刷刷～牙齒好白！', emoji:'🪥'},
+      {text:'著好衫，靚仔！', emoji:'👕'},
+      {text:'食飽飽先有能量！', emoji:'🍞'},
+      {text:'書包執好，出發返學！', emoji:'🎒'},
+    ],
+    finalEmoji: '🏫',
+    finalText: '小明返學啦！',
   },
   {
-    title: '打招呼',
-    icon: '👋',
-    desc: '用 <strong>「講嘢」</strong> 積木，令貓貓同你講「你好！」',
-    hint: '💡 㩒「講嘢」積木，打啲字入去',
-    goalCheck: (char) => char.lastSaid === '你好' || char.lastSaid === '你好！' || (char.lastSaid && char.lastSaid.includes('你好')),
-    afterRun: false,
-    requiredBlocks: ['say'],
+    title: '幫手種花',
+    icon: '🌱',
+    char: '🌱',
+    charHappy: '🌻',
+    desc: '幫小花由種子種到開花',
+    successMsg: '嘩～朵花開得好靚！',
+    steps: [
+      {emoji:'🕳️', text:'挖個窿'},
+      {emoji:'🌰', text:'放入種子'},
+      {emoji:'💧', text:'淋水'},
+      {emoji:'☀️', text:'曬太陽'},
+      {emoji:'🌻', text:'開花！'},
+    ],
+    correct: [0,1,2,3,4],
+    anims: [
+      {text:'掘個小窿先', emoji:'🕳️'},
+      {text:'擺粒種子落去', emoji:'🌰'},
+      {text:'淋多啲水水', emoji:'💧'},
+      {text:'等陽光曬下', emoji:'☀️'},
+      {text:'開花啦！好靚呀！', emoji:'🌻'},
+    ],
+    finalEmoji: '🌻',
+    finalText: '種花成功！',
   },
   {
-    title: '跳舞派對',
-    icon: '🎵',
-    desc: '用 <strong>「跳舞」</strong> 同 <strong>「轉圈」</strong> 積木，令貓貓表演跳舞！',
-    hint: '💡 先跳舞，再轉圈 — 順序好重要！',
-    goalCheck: (char) => char.danced && char.spun,
-    afterRun: false,
-    requiredBlocks: ['dance','turn'],
+    title: '整三文治',
+    icon: '🥪',
+    char: '🍞',
+    charHappy: '🥪',
+    desc: '幫手整一份美味三文治',
+    successMsg: '三文治整好，開餐！',
+    steps: [
+      {emoji:'🍞', text:'放塊麵包'},
+      {emoji:'🥬', text:'放塊生菜'},
+      {emoji:'🍅', text:'放塊番茄'},
+      {emoji:'🧀', text:'放塊芝士'},
+      {emoji:'🍞', text:'蓋上麵包'},
+    ],
+    correct: [0,1,2,3,4],
+    anims: [
+      {text:'放底塊麵包先', emoji:'🍞'},
+      {text:'加塊脆脆生菜', emoji:'🥬'},
+      {text:'切片番茄放上去', emoji:'🍅'},
+      {text:'仲有芝士', emoji:'🧀'},
+      {text:'上面再蓋塊麵包！完成！', emoji:'🥪'},
+    ],
+    finalEmoji: '🥪',
+    finalText: '三文治好好味！',
   },
   {
-    title: '超級跳',
-    icon: '⬆️',
-    desc: '用 <strong>「跳起」</strong> 同 <strong>「揮手」</strong> 積木，令貓貓跳起再揮手！',
-    hint: '💡 順序：先跳起，後揮手',
-    goalCheck: (char) => char.jumped && char.waved,
-    afterRun: false,
-    requiredBlocks: ['jump','wave'],
+    title: '去沙灘',
+    icon: '🏖️',
+    char: '🏖️',
+    charHappy: '🎉',
+    desc: '同小明準備去沙灘要帶嘅嘢',
+    successMsg: '帶齊嘢，出發去沙灘！',
+    steps: [
+      {emoji:'🧴', text:'搽防曬'},
+      {emoji:'🩳', text:'換泳褲'},
+      {emoji:'🪣', text:'拎沙灘桶'},
+      {emoji:'🧢', text:'戴帽'},
+      {emoji:'☂️', text:'擔遮'},
+    ],
+    correct: [0,1,2,3,4],
+    anims: [
+      {text:'先搽防曬，唔會曬親', emoji:'🧴'},
+      {text:'換好泳褲', emoji:'🩳'},
+      {text:'拎埋沙灘桶玩沙', emoji:'🪣'},
+      {text:'戴頂帽擋陽光', emoji:'🧢'},
+      {text:'擔住遮，出發！', emoji:'☂️'},
+    ],
+    finalEmoji: '🏖️',
+    finalText: '去沙灘玩得好開心！',
   },
   {
-    title: '循環高手',
-    icon: '🔁',
-    desc: '用 <strong>「重複」</strong> 積木，令貓貓跳舞 <strong>3次</strong>！',
-    hint: '💡 「重複」入面放「跳舞」，慳返好多積木㗎！',
-    goalCheck: (char) => char.danceCount >= 3,
-    afterRun: false,
-    requiredBlocks: ['repeat'],
+    title: '收拾玩具',
+    icon: '🧸',
+    char: '🧸',
+    charHappy: '😊',
+    desc: '幫小明收拾好啲玩具',
+    successMsg: '間房好整齊呀！',
+    steps: [
+      {emoji:'📚', text:'收起圖書'},
+      {emoji:'🧱', text:'積木入箱'},
+      {emoji:'🚗', text:'玩具車返位'},
+      {emoji:'🧸', text:'公仔放上床'},
+      {emoji:'🧹', text:'掃一掃地'},
+    ],
+    correct: [0,1,2,3,4],
+    anims: [
+      {text:'圖書疊返好', emoji:'📚'},
+      {text:'積木放返入箱', emoji:'🧱'},
+      {text:'玩具車駛返原位', emoji:'🚗'},
+      {text:'公仔放返上床', emoji:'🧸'},
+      {text:'掃乾淨地下，完成！', emoji:'🧹'},
+    ],
+    finalEmoji: '✨',
+    finalText: '間房好整齊！叻仔！',
   },
   {
-    title: '自我介紹',
-    icon: '📝',
-    desc: '令貓貓講 <strong>3句嘢</strong>：「大家好」「我係貓貓」「好開心」',
-    hint: '💡 用3個「講嘢」積木，每句打唔同嘅字',
-    goalCheck: (char) => {
-      return char.saidAll && char.saidAll.includes('大家好') && char.saidAll.includes('貓貓') && char.saidAll.includes('開心');
-    },
-    afterRun: false,
-    requiredBlocks: ['say'],
-  },
-  {
-    title: '重複舞蹈',
-    icon: '💫',
-    desc: '用 <strong>「重複」</strong> 令貓貓：重複3次「跳舞→轉圈→跳起」',
-    hint: '💡 重複入面放3個積木！',
-    goalCheck: (char) => char.danceCount >= 3 && char.spun && char.jumped,
-    afterRun: false,
-    requiredBlocks: ['repeat','dance','turn','jump'],
-  },
-  {
-    title: '自由創作',
-    icon: '🌟',
-    desc: '用任何積木，創作出一個 <strong>貓貓表演</strong>！至少要5個積木',
-    hint: '💡 用「重複」可以慳位，加多啲唔同動作！',
-    goalCheck: (char) => char.totalBlocks >= 5,
-    afterRun: false,
-    requiredBlocks: [],
+    title: '放學後',
+    icon: '📚',
+    char: '📚',
+    charHappy: '😄',
+    desc: '放學返到屋企要做嘅嘢',
+    successMsg: '小明做完功課，可以去玩啦！',
+    steps: [
+      {emoji:'🧼', text:'洗手'},
+      {emoji:'📖', text:'做功課'},
+      {emoji:'✅', text:'俾媽媽檢查'},
+      {emoji:'🎹', text:'練琴'},
+      {emoji:'🎮', text:'玩一陣'},
+    ],
+    correct: [0,1,2,3,4],
+    anims: [
+      {text:'返到屋企先洗手', emoji:'🧼'},
+      {text:'坐低做功課先', emoji:'📖'},
+      {text:'俾媽媽睇下啱唔啱', emoji:'✅'},
+      {text:'練下琴', emoji:'🎹'},
+      {text:'做完晒，玩一陣！', emoji:'🎮'},
+    ],
+    finalEmoji: '🎮',
+    finalText: '做完哂，開心地玩！',
   },
 ];
 
 let curLevel = 0;
-let blocks = [];
-let isRunning = false;
-let charState = { x: 15, lastSaid: null, danced: false, spun: false, jumped: false, waved: false, danceCount: 0, saidAll: [], totalBlocks: 0, resetDone: false };
-
-// Block colors
-const BCOLORS = {
-  move: '#4CAF50', turn: '#2196F3', jump: '#E91E63',
-  wave: '#9C27B0', dance: '#f44336', say: '#FF9800',
-  repeat: '#00BCD4', restart: '#795548',
-};
-const BNAMES = {
-  move: '🦶 行一步', turn: '🔄 轉圈', jump: '⬆️ 跳起',
-  wave: '👋 揮手', dance: '💃 跳舞', say: '💬 講嘢',
-  repeat: '🔁 重複', restart: '↩️ 重置位置',
-};
-
-const charEl = document.getElementById('char');
+let sequence = [];
+let isChecking = false;
 
 function loadLevel(idx) {
   curLevel = idx;
-  const lv = CHALLENGES[idx];
+  const lv = LEVELS[idx];
   document.getElementById('lvBadge').textContent = `第 ${idx+1} 關`;
-  document.getElementById('chIcon').textContent = lv.icon;
-  document.getElementById('chText').innerHTML = lv.desc;
-  document.getElementById('chHint').textContent = lv.hint;
-  document.getElementById('nextBtn').classList.remove('show');
-  document.getElementById('playBtn').disabled = false;
-  document.getElementById('playBtn').textContent = '▶️ 開始';
-  document.getElementById('status').textContent = '🐱 砌好積木，㩒「開始」睇結果！';
-  document.getElementById('status').className = 'status';
-  blocks = [];
-  renderStack();
-  resetCharState();
-  resetCharVisual();
+  document.getElementById('sceneIcon').textContent = lv.icon;
+  document.getElementById('sceneTitle').textContent = lv.title;
+  document.getElementById('sceneDesc').innerHTML = lv.desc;
+  document.getElementById('nextBtn').className = 'ctrl btn-next';
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('checkBtn').textContent = '✅ 檢查';
+  document.getElementById('hint').textContent = '👆 㩒步驟排好正確次序';
+  document.getElementById('hint').className = 'action-hint';
+
+  // Reset char
+  document.getElementById('charBig').className = 'char-big';
+  document.getElementById('charBig').textContent = lv.char;
+  document.getElementById('charResult').textContent = '';
+
+  // Remove any success overlay
+  const oldOverlay = document.querySelector('.success-overlay');
+  if (oldOverlay) oldOverlay.remove();
+
+  sequence = [];
+  renderSteps(lv);
+  renderSequence();
 }
 
-function resetCharState() {
-  charState = { x: 15, lastSaid: null, danced: false, spun: false, jumped: false, waved: false, danceCount: 0, saidAll: [], totalBlocks: 0, resetDone: false };
-}
-
-function resetCharVisual() {
-  charEl.className = 'stage-char';
-  charEl.style.left = '15%';
-  charEl.style.bottom = '30%';
-  charEl.style.opacity = '1';
-  charEl.style.transform = 'scale(1)';
-  charEl.textContent = '🐱';
-  charEl.removeAttribute('data-text');
-}
-
-// ======== BLOCKS ========
-document.querySelectorAll('.block').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (isRunning) return;
-    const cmd = btn.dataset.cmd;
-    if (cmd === 'say') showSayDialog();
-    else if (cmd === 'repeat') showRepeatDialog();
-    else addBlock({ type: cmd });
-  });
-});
-
-function addBlock(b) {
-  if (blocks.length >= 20) {
-    document.getElementById('status').textContent = '❌ 太多積木啦！清空啲先';
-    document.getElementById('status').className = 'status fail';
-    return;
+function renderSteps(lv) {
+  const tray = document.getElementById('stepsTray');
+  tray.innerHTML = '';
+  const shuffled = lv.steps.map((s,i) => ({...s, origIdx: i}));
+  // Fisher-Yates shuffle
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
-  blocks.push(b);
-  renderStack();
-}
 
-function removeBlock(idx) {
-  if (isRunning) return;
-  blocks.splice(idx, 1);
-  renderStack();
-}
-
-function showSayDialog() {
-  const ov = document.createElement('div');
-  ov.className = 'dialog-overlay';
-  ov.innerHTML = `
-    <div class="dialog-card">
-      <h3>💬 想貓貓講咩？</h3>
-      <input type="text" id="sayInp" placeholder="例如：你好！" maxlength="15" autofocus>
-      <div class="dbtns">
-        <button class="cancel" onclick="this.closest('.dialog-overlay').remove()">取消</button>
-        <button class="ok" id="sayOk">✅ 確定</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(ov);
-  document.getElementById('sayInp').focus();
-  document.getElementById('sayOk').onclick = () => {
-    const v = document.getElementById('sayInp').value.trim();
-    if (!v) { ov.remove(); return; }
-    addBlock({ type: 'say', text: v.slice(0,15) });
-    ov.remove();
-  };
-  ov.addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('sayOk').click(); });
-}
-
-function showRepeatDialog() {
-  const ov = document.createElement('div');
-  ov.className = 'dialog-overlay';
-  ov.innerHTML = `
-    <div class="dialog-card">
-      <h3>🔁 重複幾多次？</h3>
-      <div class="repeat-options">
-        <div class="repeat-opt" data-n="2">2次</div>
-        <div class="repeat-opt selected" data-n="3">3次</div>
-        <div class="repeat-opt" data-n="4">4次</div>
-        <div class="repeat-opt" data-n="5">5次</div>
-      </div>
-      <div class="dbtns">
-        <button class="cancel" onclick="this.closest('.dialog-overlay').remove()">取消</button>
-        <button class="ok" style="background:#00BCD4" id="repOk">✅ 確定</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(ov);
-  ov.querySelectorAll('.repeat-opt').forEach(o => {
-    o.onclick = () => {
-      ov.querySelectorAll('.repeat-opt').forEach(x => x.classList.remove('selected'));
-      o.classList.add('selected');
-    };
+  shuffled.forEach((step) => {
+    const chip = document.createElement('div');
+    chip.className = 'step-chip';
+    chip.style.background = '#fff';
+    chip.style.border = '2px solid #e0e6f0';
+    chip.innerHTML = `<span class="emoji">${step.emoji}</span> ${step.text}`;
+    chip.dataset.origIdx = step.origIdx;
+    chip.onclick = () => addToSequence(step.origIdx);
+    tray.appendChild(chip);
   });
-  document.getElementById('repOk').onclick = () => {
-    const n = parseInt(ov.querySelector('.repeat-opt.selected').dataset.n);
-    addBlock({ type: 'repeat', count: n, children: [] });
-    ov.remove();
-  };
 }
 
-function renderStack() {
-  const stack = document.getElementById('stack');
-  stack.innerHTML = '';
-  document.getElementById('blockCount').textContent = `${blocks.length} 個積木`;
+function addToSequence(origIdx) {
+  if (isChecking) return;
+  const lv = LEVELS[curLevel];
+  if (sequence.length >= lv.steps.length) return;
+  // Check if already in sequence
+  if (sequence.includes(origIdx)) return;
+  sequence.push(origIdx);
+  renderSequence();
+  document.getElementById('hint').textContent = `已排 ${sequence.length}/${lv.steps.length} 個步驟`;
+  if (sequence.length === lv.steps.length) {
+    document.getElementById('hint').textContent = '✅ 排好晒！㩒「檢查」睇下啱唔啱！';
+    document.getElementById('hint').className = 'action-hint ok';
+  }
+}
 
-  if (blocks.length === 0) {
-    stack.innerHTML = '<div class="stack-empty">㩒上面嘅積木開始砌程式 🧱</div>';
+function removeFromSeq(idx) {
+  if (isChecking) return;
+  sequence.splice(idx, 1);
+  renderSequence();
+  const lv = LEVELS[curLevel];
+  document.getElementById('hint').textContent = `已排 ${sequence.length}/${lv.steps.length} 個步驟`;
+  document.getElementById('hint').className = 'action-hint';
+}
+
+function renderSequence() {
+  const row = document.getElementById('seqRow');
+  row.innerHTML = '';
+  const lv = LEVELS[curLevel];
+
+  if (sequence.length === 0) {
+    row.innerHTML = '<div class="seq-empty">㩒上面嘅步驟，排好順序</div>';
     return;
   }
 
-  let flatIdx = 0;
-  blocks.forEach((b, i) => {
-    if (b.type === 'repeat') {
-      const wrap = document.createElement('div');
-      wrap.className = 'repeat-wrap';
-      wrap.dataset.idx = i;
-      const hdr = document.createElement('div');
-      hdr.className = 'repeat-header';
-      hdr.innerHTML = `🔁 重複 ${b.count} 次 <button class="repeat-rm" data-idx="${i}">✕ 刪除</button>`;
-      wrap.appendChild(hdr);
+  sequence.forEach((origIdx, i) => {
+    const step = lv.steps[origIdx];
+    const slot = document.createElement('div');
+    slot.className = 'seq-slot';
+    slot.innerHTML = `${step.emoji} ${step.text} <button class="x">✕</button>`;
+    slot.querySelector('.x').onclick = (e) => { e.stopPropagation(); removeFromSeq(i); };
+    row.appendChild(slot);
 
-      const body = document.createElement('div');
-      body.className = 'repeat-body';
-      if (!b.children || b.children.length === 0) {
-        const emp = document.createElement('div');
-        emp.style.cssText = 'color:rgba(255,255,255,0.2);font-size:11px;padding:4px 0;text-align:center';
-        emp.textContent = '← 㩒積木放入重複入面';
-        body.appendChild(emp);
-      } else {
-        b.children.forEach((child, ci) => {
-          const cb = document.createElement('div');
-          cb.className = 'stack-block';
-          cb.style.background = BCOLORS[child.type] || '#666';
-          cb.textContent = child.type === 'say' ? `💬 「${child.text}」` : BNAMES[child.type];
-          const rm = document.createElement('button');
-          rm.className = 'rm'; rm.textContent = '✕';
-          rm.onclick = () => {
-            b.children.splice(ci, 1);
-            renderStack();
-          };
-          cb.appendChild(rm);
-          body.appendChild(cb);
-        });
-      }
-      wrap.appendChild(body);
-      stack.appendChild(wrap);
-
-      // "add to repeat" - intercept clicks on blocks when a repeat is open
-      hdr.querySelector('.repeat-rm').onclick = (e) => {
-        e.stopPropagation();
-        blocks.splice(i, 1);
-        renderStack();
-      };
-
-    } else {
-      const el = document.createElement('div');
-      el.className = 'stack-block';
-      el.style.background = BCOLORS[b.type] || '#666';
-      el.textContent = b.type === 'say' ? `💬 「${b.text}」` : BNAMES[b.type];
-      el.dataset.idx = i;
-      const rm = document.createElement('button');
-      rm.className = 'rm'; rm.textContent = '✕';
-      rm.onclick = (e) => { e.stopPropagation(); removeBlock(i); };
-      el.appendChild(rm);
-      stack.appendChild(el);
+    // Add arrow between
+    if (i < sequence.length - 1) {
+      const arrow = document.createElement('span');
+      arrow.className = 'seq-arrow';
+      arrow.textContent = '→';
+      row.appendChild(arrow);
     }
   });
-
-  // Check if there's an open repeat block WITHOUT children, intercept new blocks
-  const openRepeat = blocks.findIndex(b => b.type === 'repeat' && (!b.children || b.children.length === 0));
-  if (openRepeat >= 0) {
-    // Show a "filling" indicator
-    document.getElementById('status').textContent = '🔁 而家㩒嘅積木會放入「重複」入面！';
-    document.getElementById('status').className = 'status info';
-
-    // Override addBlock temporarily
-    const origAdd = addBlock;
-    window._origAdd = origAdd;
-    addBlock = function(b) {
-      if (b.type === 'repeat') {
-        origAdd(b);
-        return;
-      }
-      const repIdx = blocks.findIndex(x => x.type === 'repeat' && (!x.children || x.children.length === 0));
-      if (repIdx >= 0) {
-        if (!blocks[repIdx].children) blocks[repIdx].children = [];
-        blocks[repIdx].children.push(b);
-        renderStack();
-      } else {
-        origAdd(b);
-      }
-    };
-  } else {
-    // Restore
-    if (window._origAdd) {
-      addBlock = window._origAdd;
-      window._origAdd = null;
-    }
-    const s = document.getElementById('status');
-    if (s.textContent.includes('重複')) {
-      s.textContent = '🐱 砌好積木，㩒「開始」睇結果！';
-      s.className = 'status';
-    }
-  }
 }
 
-// ======== RUN ========
-document.getElementById('playBtn').addEventListener('click', runCode);
+// Check
+document.getElementById('checkBtn').addEventListener('click', checkAnswer);
 
-async function runCode() {
-  if (isRunning || blocks.length === 0) return;
-  isRunning = true;
-  document.getElementById('playBtn').disabled = true;
-  document.getElementById('playBtn').textContent = '⏳ 執行中...';
-  document.getElementById('clearBtn').disabled = true;
-  document.getElementById('status').textContent = '🤖 執行緊程式...';
-  document.getElementById('status').className = 'status info';
+async function checkAnswer() {
+  if (isChecking) return;
+  const lv = LEVELS[curLevel];
 
-  resetCharState();
-  resetCharVisual();
-  await sleep(300);
+  if (sequence.length !== lv.steps.length) {
+    document.getElementById('hint').textContent = `仲爭 ${lv.steps.length - sequence.length} 個步驟未排呀！`;
+    document.getElementById('hint').className = 'action-hint fail';
+    return;
+  }
 
-  // Flatten blocks
-  const flatCmds = [];
-  for (const b of blocks) {
-    if (b.type === 'repeat') {
-      for (let r = 0; r < b.count; r++) {
-        if (b.children) {
-          for (const c of b.children) flatCmds.push(c);
-        }
-      }
-    } else {
-      flatCmds.push(b);
+  isChecking = true;
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('checkBtn').textContent = '⏳ 檢查中...';
+
+  // Check if correct
+  let correct = true;
+  for (let i = 0; i < lv.correct.length; i++) {
+    if (sequence[i] !== lv.correct[i]) {
+      correct = false;
+      break;
     }
   }
 
-  let step = 0;
-  for (const cmd of flatCmds) {
-    // Highlight in editor
-    const allBlocks = document.querySelectorAll('.stack-block, .repeat-body .stack-block');
-    // We'll just highlight by index approximation
+  if (correct) {
+    // Success! Animate through steps
+    const charBig = document.getElementById('charBig');
+    const charResult = document.getElementById('charResult');
 
-    await executeCmd(cmd);
-    step++;
-    charState.totalBlocks++;
-  }
+    for (let i = 0; i < lv.anims.length; i++) {
+      const a = lv.anims[i];
+      charBig.textContent = a.emoji;
+      charResult.textContent = a.text;
 
-  // Check goal
-  const lv = CHALLENGES[curLevel];
-  document.getElementById('status').textContent = '✅ 程式執行完畢！';
-  document.getElementById('status').className = 'status';
+      // Highlight current slot
+      const slots = document.querySelectorAll('.seq-slot');
+      if (slots[i]) {
+        slots[i].classList.remove('active-slot');
+        // Force reflow
+        void slots[i].offsetWidth;
+        slots[i].classList.add('active-slot');
+      }
 
-  if (lv.goalCheck(charState)) {
-    document.getElementById('status').textContent = '🎉 挑戰成功！好叻仔！';
-    document.getElementById('status').className = 'status ok';
+      await sleep(600);
+      if (slots[i]) slots[i].classList.remove('active-slot');
+    }
+
+    // Final celebration
+    charBig.textContent = lv.finalEmoji;
+    charBig.classList.add('done');
+    charResult.textContent = lv.finalText;
+
+    document.getElementById('hint').textContent = '🎉 啱晒！你係生活小管家！';
+    document.getElementById('hint').className = 'action-hint ok';
     spawnConfetti();
-    if (curLevel < CHALLENGES.length - 1) {
+
+    // Show next button
+    if (curLevel < LEVELS.length - 1) {
       document.getElementById('nextBtn').classList.add('show');
     } else {
-      document.getElementById('status').textContent = '🏆 全部挑戰完成！你係編程小高手！';
+      document.getElementById('hint').textContent = '🏆 全部完成！你係排序小高手！';
     }
   } else {
-    document.getElementById('status').textContent = '😿 未達到目標喎⋯⋯再諗下點砌過！';
-    document.getElementById('status').className = 'status fail';
+    // Wrong order
+    document.getElementById('hint').textContent = '😅 次序唔啱喎⋯⋯再排過啦！';
+    document.getElementById('hint').className = 'action-hint fail';
   }
 
-  document.getElementById('playBtn').disabled = false;
-  document.getElementById('playBtn').textContent = '▶️ 開始';
-  document.getElementById('clearBtn').disabled = false;
-  isRunning = false;
-}
-
-async function executeCmd(cmd) {
-  switch(cmd.type) {
-    case 'move': {
-      let cx = parseFloat(charEl.style.left) || 15;
-      cx = Math.min(85, cx + 10);
-      charEl.style.left = cx + '%';
-      charState.x = cx;
-      await sleep(350);
-      break;
-    }
-    case 'turn': {
-      charEl.classList.add('anim-spin');
-      charState.spun = true;
-      await sleep(500);
-      charEl.classList.remove('anim-spin');
-      break;
-    }
-    case 'jump': {
-      charEl.classList.add('anim-jump');
-      charState.jumped = true;
-      await sleep(400);
-      charEl.classList.remove('anim-jump');
-      break;
-    }
-    case 'wave': {
-      charEl.classList.add('anim-wave');
-      charState.waved = true;
-      await sleep(500);
-      charEl.classList.remove('anim-wave');
-      break;
-    }
-    case 'dance': {
-      charEl.classList.add('anim-dance');
-      charState.danced = true;
-      charState.danceCount = (charState.danceCount || 0) + 1;
-      await sleep(800);
-      charEl.classList.remove('anim-dance');
-      break;
-    }
-    case 'say': {
-      charEl.dataset.text = cmd.text;
-      charState.lastSaid = cmd.text;
-      if (!charState.saidAll) charState.saidAll = [];
-      charState.saidAll.push(cmd.text);
-      await sleep(1000);
-      charEl.removeAttribute('data-text');
-      break;
-    }
-    case 'restart': {
-      resetCharVisual();
-      charState.x = 15;
-      await sleep(350);
-      break;
-    }
-  }
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('checkBtn').textContent = '✅ 檢查';
+  isChecking = false;
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// Clear
-document.getElementById('clearBtn').addEventListener('click', () => {
-  if (isRunning) return;
-  blocks = [];
-  renderStack();
-  resetCharState();
-  resetCharVisual();
-  document.getElementById('status').textContent = '🧹 清空咗！重新砌過吧';
-  document.getElementById('status').className = 'status';
-  document.getElementById('nextBtn').classList.remove('show');
+// Reset
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (isChecking) return;
+  sequence = [];
+  renderSequence();
+  const lv = LEVELS[curLevel];
+  document.getElementById('charBig').className = 'char-big';
+  document.getElementById('charBig').textContent = lv.char;
+  document.getElementById('charResult').textContent = '';
+  document.getElementById('hint').textContent = '🔄 重新排過啦！';
+  document.getElementById('hint').className = 'action-hint';
 });
 
-// Next level
+// Next
 document.getElementById('nextBtn').addEventListener('click', () => {
-  if (curLevel < CHALLENGES.length - 1) {
+  if (curLevel < LEVELS.length - 1) {
     loadLevel(curLevel + 1);
   }
 });
@@ -785,7 +580,7 @@ function spawnConfetti() {
   const c = document.createElement('div');
   c.className = 'cf-c';
   document.body.appendChild(c);
-  const colors = ['#fbbf24','#4CAF50','#2196F3','#E91E63','#FF9800','#9C27B0','#00BCD4'];
+  const colors = ['#667eea','#48bb78','#f6ad55','#fc8181','#9f7aea','#4299e1','#ed64a6'];
   for (let i = 0; i < 40; i++) {
     const p = document.createElement('div');
     p.className = 'cf-p';
